@@ -24,7 +24,7 @@ if(isset($cliargs['core']) && file_exists($cliargs['core'])) {
 	function onException(string $path, int $line, string $str, int $no) {
 		$path = str_replace(getcwd(), '', $path); 
 		$str = str_replace(getcwd(), '', $str); 
-		SpelakoUtils::buildString([
+		echo SpelakoUtils::buildString([
 			'Spelako 在运行时出现了一个致命的错误!',
 			'位置: '.$path.' - 第 '.$line.' 行',
 			'内容: '.$str.' ('.$no.')'
