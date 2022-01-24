@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Copyright (C) 2020-2022 Spelako Project
  * 
@@ -12,32 +12,40 @@
 
 $cliargs = getopt('', ['core:', 'yolo::']);
 
-if(isset($cliargs['core']) && file_exists($cliargs['core'])) {
-	require_once($cliargs['core']);
-	Spelako::loadCommands();
-	set_error_handler(function($errno, $errstr, $errfile, $errline) {
-		if($errno != (2 || 8)) onException($errfile, $errline, $errstr, $errno);
-	}, E_ALL | E_STRICT);
-	set_exception_handler(function($e) {
-		onException($e->getFile(), $e->getLine(), $e->getMessage(), $e->getCode());
-	});
-	function onException(string $path, int $line, string $str, int $no) {
-		$path = str_replace(getcwd(), '', $path); 
-		$str = str_replace(getcwd(), '', $str); 
-		echo SpelakoUtils::buildString([
-			'Spelako 在运行时出现了一个致命的错误!',
-			'位置: '.$path.' - 第 '.$line.' 行',
-			'内容: '.$str.' ('.$no.')'
-		], eol: true);
-	}
-}
-else {
-	echo '提供的 SpelakoCore 路径无效. 请使用命令行参数 "--core" 指向正确的 SpelakoCore.php. ';
+if(!(isset($cliargs['core']) && file_exists($cliargs['core']))) {
+	echo '提供的 SpelakoCore 路径无效. 请使用命令行参数 "--core" 指向正确的 SpelakoCore.php.';
 	die();
 }
 
+/*
+function onException(string $path, int $line, string $str, int $no) {
+	$path = str_replace(getcwd(), '', $path); 
+	$str = str_replace(getcwd(), '', $str); 
+	echo SpelakoUtils::buildString([
+		'Spelako 在运行时出现了一个致命的错误!',
+		'位置: '.$path.' - 第 '.$line.' 行',
+		'内容: '.$str.' ('.$no.')'
+	], eol: true);
+}
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+	onException($errfile, $errline, $errstr, $errno);
+}, E_ALL | E_STRICT);
+set_exception_handler(function($e) {
+	onException($e->getFile(), $e->getLine(), $e->getMessage(), $e->getCode());
+});
+*/
+
+require_once($cliargs['core']);
+$core = new SpelakoCore();
+
+foreach(glob($core->getcwd().'/commands/*.php') as $file) {
+	require_once($file);
+	$classname = basename($file, '.php');
+	$core->loadCommand($classname);
+}
+
 if(isset($cliargs['yolo']) && $cliargs['yolo'] != false) {
-	echo Spelako::execute($cliargs['yolo'], 'admin').PHP_EOL;
+	echo $core->execute($cliargs['yolo'], 'admin1').PHP_EOL;
 }
 else {
 	cli_set_process_title('Spelako CLI');
@@ -49,7 +57,8 @@ else {
 	while(true) {
 		echo '> /';
 		$msg = rtrim(fgets(STDIN));
-		$result = Spelako::execute('/'.$msg, 'admin');
+		$result = $core->execute('/'.$msg, 'admin1');
 		if($result) echo $result.PHP_EOL;
 	}
 }
+?>
