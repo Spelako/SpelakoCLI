@@ -17,7 +17,6 @@ if(!(isset($cliargs['core']) && file_exists($cliargs['core']))) {
 	die();
 }
 
-/*
 function onException(string $path, int $line, string $str, int $no) {
 	$path = str_replace(getcwd(), '', $path); 
 	$str = str_replace(getcwd(), '', $str); 
@@ -33,7 +32,6 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
 set_exception_handler(function($e) {
 	onException($e->getFile(), $e->getLine(), $e->getMessage(), $e->getCode());
 });
-*/
 
 require_once($cliargs['core']);
 $core = new SpelakoCore();
@@ -45,7 +43,7 @@ foreach(glob($core->getcwd().'/commands/*.php') as $file) {
 }
 
 if(isset($cliargs['yolo']) && $cliargs['yolo'] != false) {
-	echo $core->execute($cliargs['yolo'], 'admin1').PHP_EOL;
+	echo $core->execute($cliargs['yolo'], 'admin').PHP_EOL;
 }
 else {
 	cli_set_process_title('Spelako CLI');
@@ -57,7 +55,7 @@ else {
 	while(true) {
 		echo '> /';
 		$msg = rtrim(fgets(STDIN));
-		$result = $core->execute('/'.$msg, 'admin1');
+		$result = $core->execute('/'.$msg, 'admin');
 		if($result) echo $result.PHP_EOL;
 	}
 }
