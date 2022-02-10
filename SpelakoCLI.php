@@ -10,10 +10,15 @@
  * 
  */
 
-$cliargs = getopt('', ['core:', 'yolo::']);
+$cliargs = getopt('', ['core:', 'config:', 'yolo::']);
 
 if(!(isset($cliargs['core']) && file_exists($cliargs['core']))) {
 	echo '提供的 SpelakoCore 路径无效. 请使用命令行参数 "--core" 指向正确的 SpelakoCore.php.';
+	die();
+}
+
+if(!(isset($cliargs['core']) && file_exists($cliargs['config']))) {
+	echo '提供的配置文件路径无效. 请使用命令行参数 "--config" 指向正确的 config.json.';
 	die();
 }
 
@@ -24,7 +29,7 @@ function onException(string $path, int $line, string $str, int $no) {
 		'Spelako 在运行时出现了一个致命的错误!',
 		'位置: '.$path.' - 第 '.$line.' 行',
 		'内容: '.$str.' ('.$no.')'
-	], eol: true);
+	]).PHP_EOL;
 }
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
 	onException($errfile, $errline, $errstr, $errno);
@@ -34,13 +39,7 @@ set_exception_handler(function($e) {
 });
 
 require_once($cliargs['core']);
-$core = new SpelakoCore();
-
-foreach(glob($core->getcwd().'/commands/*.php') as $file) {
-	require_once($file);
-	$classname = basename($file, '.php');
-	$core->loadCommand($classname);
-}
+$core = new SpelakoCore(realpath($cliargs['config']));
 
 if(isset($cliargs['yolo']) && $cliargs['yolo'] != false) {
 	echo $core->execute($cliargs['yolo'], 'admin').PHP_EOL;
@@ -50,7 +49,7 @@ else {
 	echo SpelakoUtils::buildString([
 		'Copyright (C) 2020-2022 Spelako Project',
 		'This program licensed under the GNU Affero General Public License version 3 (AGPLv3).'
-	], eol: true);
+	]).PHP_EOL;
 
 	while(true) {
 		echo '> /';
