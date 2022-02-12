@@ -26,7 +26,7 @@ if(!(isset($cliargs['config']) && file_exists($cliargs['config']))) {
 	exit('提供的配置文件路径无效. 请使用命令行参数 "--config" 指向正确的 config.json.');
 }
 
-require_once($cliargs['core']);
+require_once(realpath($cliargs['core']));
 $core = new SpelakoCore(realpath($cliargs['config']));
 
 if(isset($cliargs['yolo']) && $cliargs['yolo'] != false) {
@@ -43,5 +43,6 @@ while(true) {
 	$msg = rtrim(fgets(STDIN));
 	$result = $core->execute('/'.$msg, 'admin');
 	if($result) echo $result.PHP_EOL;
+	else echo 'Unknown command.'.PHP_EOL;
 }
 ?>
