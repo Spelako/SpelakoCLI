@@ -1,2 +1,5 @@
 #!/usr/bin/env sh
-php SpelakoCLI.php --core="../Spelako/SpelakoCore.php" --config="config.json"
+while :
+do
+php SpelakoCLI.php --core="../SpelakoCore/SpelakoCore.php" --config="config.json"
+done
