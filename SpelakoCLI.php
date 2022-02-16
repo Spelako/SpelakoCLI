@@ -35,7 +35,7 @@ if(isset($cliargs['yolo']) && $cliargs['yolo'] != false) {
 
 echo SpelakoUtils::buildString([
 	'Copyright (C) 2020-2022 Spelako Project',
-	'This program licensed under the GNU Affero General Public License version 3 (AGPLv3).'
+	'This program is licensed under the GNU Affero General Public License version 3 (AGPLv3).'
 ]).PHP_EOL;
 
 while(true) {
